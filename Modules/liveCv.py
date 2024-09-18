@@ -65,6 +65,7 @@ def predict_on_liveVideo(camera_index, output_directory, SEQUENCE_LENGTH, model)
                     post_violence_buffer.clear()
                     save_frames = False
                     detecting_violence = False
+                    
 
         # Display the frame with the prediction
         cv2.putText(frame, predicted_class_name, (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -73,7 +74,7 @@ def predict_on_liveVideo(camera_index, output_directory, SEQUENCE_LENGTH, model)
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
+    
     # Release resources
     video_reader.release()
     cv2.destroyAllWindows()

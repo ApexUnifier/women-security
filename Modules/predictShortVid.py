@@ -2,6 +2,7 @@ import os
 import time
 from captureShortVid import capture_segment
 from openCv import predict_single_action
+from addJson import add_to_json
 
 def process_live_video(camera_index, segment_duration, model, output_directory, SEQUENCE_LENGTH):
     """
@@ -30,6 +31,8 @@ def process_live_video(camera_index, segment_duration, model, output_directory, 
         final_file_path = f"{output_directory}/violence_segment_{timestamp}.mp4"
         os.rename(temp_file_path, final_file_path)
         print(f"Saved violence segment to {final_file_path}")
+        print(os.path.abspath('data/data.json'))
+        add_to_json(final_file_path)
     else:
         # Delete the temporary file
         os.remove(temp_file_path)

@@ -4,7 +4,7 @@ from predictShortVid import process_live_video
 # Define the model
 lrcModel = LRCNModel(20, 64, 64, 2)
 model = lrcModel.create_model()
-model.load_weights('Models/0.86.h5')
+model.load_weights('Models/ViolenceModelFinal.keras')
 
 # Parameters
 camera_index = 1  # Adjust as needed
