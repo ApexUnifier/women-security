@@ -2,11 +2,17 @@ import zoneService from "../services/zoneService.js";
 
 const getZone = async (req, res) => {
   try {
+    // console.log("fjkaaaaaaaaaas");
     const { latitude, longitude } = req.body;
 
     let zone = await zoneService.getZone(latitude, longitude);
-
-    res.status(200).json({
+    if (!zone) {
+      return res.status(200).json({
+        status: false,
+        message: "Zone not found",
+      });
+    }
+    return res.status(200).json({
       status: true,
       message: "Zone found",
       category: zone.category,

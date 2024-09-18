@@ -2,7 +2,7 @@
 import express from "express";
 import zoneController from "../controllers/zoneController.js";
 
-const router = express.Router();
+const   router = express.Router();
 
 router.post("/create", zoneController.createZone);
 router.post("/get", zoneController.getZone);

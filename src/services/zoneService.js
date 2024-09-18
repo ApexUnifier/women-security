@@ -5,7 +5,7 @@ const getZone = async (latitude, longitude) => {
     if (!latitude || !longitude) {
       throw new Error("Latitude and Longitude are required");
     }
-    const zone = Zone.findOne({ latitude, longitude });
+    const zone = await Zone.findOne({ latitude, longitude });
 
     return zone;
   } catch (err) {

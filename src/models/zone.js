@@ -5,7 +5,6 @@ const zoneSchema = new mongoose.Schema(
     latitude: {
       type: String,
       required: true,
-      unique: true,
     },
     longitude: {
       type: String,
@@ -24,6 +23,9 @@ const zoneSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Create a compound index to ensure unique latitude and longitude pairs
+zoneSchema.index({ latitude: 1, longitude: 1 }, { unique: true });
 
 const Zone = mongoose.model("Zone", zoneSchema);
 

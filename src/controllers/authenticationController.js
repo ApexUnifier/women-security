@@ -4,16 +4,7 @@ import jwt from "jsonwebtoken";
 /**
  * Controller function to create a new user.
  *
- * @param req 
-    - mail
-    - phone
-    - password
-    - account type = user // enum -> user/police/admin
-    - gender
-    - Aadhar
-    - emergency contact
-    --  name, phone numbers, email
-- 
+ * @param req - Express request object
  * @param res - Express response object used to send back the HTTP response
  */
 const register = async (req, res) => {
@@ -21,18 +12,23 @@ const register = async (req, res) => {
     const { data, accountType } = req.body;
 
     let returnData;
-    if (accountType == "POLICE")
+    if (accountType === "POLICE") {
       returnData = await authenticationService.createPolice(data);
-    else if (accountType == "USER")
+    } else if (accountType === "USER") {
       returnData = await authenticationService.createUser(data);
-    else if (accountType == "ADMIN")
+    } else if (accountType === "ADMIN") {
       returnData = await authenticationService.createAdmin(data);
+    } else {
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid account type" });
+    }
 
     const token = createToken(returnData._id, accountType);
 
     res.status(201).json({
       status: true,
-      message: accountType + " Registration successfully",
+      message: `${accountType} Registration successful`,
       returnData,
       token,
     });
@@ -42,7 +38,7 @@ const register = async (req, res) => {
 };
 
 /**
- * Controller function to retrieve all users.
+ * Controller function to handle user login.
  *
  * @param req - Express request object
  * @param res - Express response object used to send back the HTTP response
@@ -53,18 +49,23 @@ const login = async (req, res) => {
     const { email, password } = data;
 
     let returnData;
-    if (accountType == "POLICE")
+    if (accountType === "POLICE") {
       returnData = await authenticationService.loginPolice(email, password);
-    else if (accountType == "USER")
+    } else if (accountType === "USER") {
       returnData = await authenticationService.loginUser(email, password);
-    else if (accountType == "ADMIN")
+    } else if (accountType === "ADMIN") {
       returnData = await authenticationService.loginAdmin(email, password);
+    } else {
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid account type" });
+    }
 
     const token = createToken(returnData._id, accountType);
 
     res.status(200).json({
       status: true,
-      message: accountType + " Login successfully",
+      message: `${accountType} Login successful`,
       returnData,
       token,
     });
@@ -73,24 +74,41 @@ const login = async (req, res) => {
   }
 };
 
+/**
+ * Controller function to get user profile based on token.
+ *
+ * @param req - Express request object
+ * @param res - Express response object used to send back the HTTP response
+ */
 const profile = async (req, res) => {
   try {
     const { userToken } = req.body;
 
     const extractedData = extractDataFromToken(userToken);
+    if (!extractedData) {
+      return res
+        .status(401)
+        .json({ status: false, message: "Invalid or expired token" });
+    }
+
     const { _id, accountType } = extractedData;
 
     let returnData;
-    if (accountType == "POLICE")
+    if (accountType === "POLICE") {
       returnData = await authenticationService.getPolice(_id);
-    else if (accountType == "USER")
+    } else if (accountType === "USER") {
       returnData = await authenticationService.getUser(_id);
-    else if (accountType == "ADMIN")
+    } else if (accountType === "ADMIN") {
       returnData = await authenticationService.getAdmin(_id);
+    } else {
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid account type" });
+    }
 
     res.status(200).json({
       status: true,
-      message: accountType + " Login successfully",
+      message: `${accountType} Profile fetched successfully`,
       returnData,
     });
   } catch (error) {
@@ -99,21 +117,13 @@ const profile = async (req, res) => {
 };
 
 const createToken = (_id, accountType) => {
-  return jwt.sign({ _id, accountType }, "AuthSecreateKey", { expiresIn: "5d" });
+  return jwt.sign({ _id, accountType }, "AuthSecretKey", { expiresIn: "5d" });
 };
 
 const extractDataFromToken = (token) => {
   try {
-    // Decode the token without verifying to check the expiration
-    const decoded = jwt.decode(token, { complete: true });
-
-    // Check if the token is expired
-    if (decoded && decoded.payload.exp * 1000 < Date.now()) {
-      return "expired token";
-    }
-
     // Verify and decode the token using the secret key
-    const verifiedDecoded = jwt.verify(token, "AuthSecreateKey");
+    const verifiedDecoded = jwt.verify(token, "AuthSecretKey");
     return verifiedDecoded; // Return the payload if the token is valid
   } catch (error) {
     // Handle token verification errors

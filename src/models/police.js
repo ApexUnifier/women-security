@@ -41,6 +41,10 @@ const policeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    stationId: {
+      type: String,
+      default:null
+    },
   },
   {
     timestamps: true,
