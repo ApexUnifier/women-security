@@ -110,6 +110,7 @@ def predict_single_action(video_file_path, SEQUENCE_LENGTH, model):
         predicted_labels_probabilities = model.predict(frames_array)[0]
         predicted_label = np.argmax(predicted_labels_probabilities)
         predicted_class_name = CLASSES_LIST[predicted_label]
+        print(predicted_class_name)
         video_reader.release()
         return {"class": predicted_class_name,"confidence":predicted_labels_probabilities[predicted_label]}
 
